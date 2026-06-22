@@ -25,14 +25,17 @@ test.describe('Contact Form @forms', () => {
     let form = await contactPage.findContactForm();
 
     if (!form) {
-      // Try /contact, /contact-us, /get-in-touch
+      // Try /contact directly (most reliable path, especially for Squarespace sites)
+      // Use networkidle to give JS-rendered forms time to hydrate
       const contactPaths = ['/contact', '/contact-us', '/get-in-touch', '/reach-out'];
       for (const contactPath of contactPaths) {
         try {
           await page.goto(siteConfig.url.replace(/\/$/, '') + contactPath, {
-            waitUntil: 'domcontentloaded',
-            timeout: 10_000,
+            waitUntil: 'networkidle',
+            timeout: 20_000,
           });
+          // Extra wait for Squarespace form JS to render
+          await page.waitForTimeout(1000);
           form = await contactPage.findContactForm();
           if (form) break;
         } catch {
@@ -42,13 +45,13 @@ test.describe('Contact Form @forms', () => {
     }
 
     if (!form) {
-      // Also check if there's a "Contact" link in nav to follow
-      const contactLink = page.locator('a').filter({ hasText: /contact/i }).first();
-      if (await contactLink.count() > 0) {
-        await contactLink.click();
-        await page.waitForLoadState('domcontentloaded');
-        form = await contactPage.findContactForm();
-      }
+      // Final fallback: navigate directly via URL (skip nav click — hidden on mobile)
+      await page.goto(siteConfig.url.replace(/\/$/, '') + '/contact', {
+        waitUntil: 'networkidle',
+        timeout: 20_000,
+      }).catch(() => null);
+      await page.waitForTimeout(1500);
+      form = await contactPage.findContactForm();
     }
 
     expect(
@@ -67,9 +70,10 @@ test.describe('Contact Form @forms', () => {
 
     if (!form) {
       await page.goto(siteConfig.url.replace(/\/$/, '') + '/contact', {
-        waitUntil: 'domcontentloaded',
-        timeout: 10_000,
+        waitUntil: 'networkidle',
+        timeout: 20_000,
       }).catch(() => null);
+      await page.waitForTimeout(1000);
       form = await contactPage.findContactForm();
     }
 
@@ -99,9 +103,10 @@ test.describe('Contact Form @forms', () => {
 
     if (!form) {
       await page.goto(siteConfig.url.replace(/\/$/, '') + '/contact', {
-        waitUntil: 'domcontentloaded',
-        timeout: 10_000,
+        waitUntil: 'networkidle',
+        timeout: 20_000,
       }).catch(() => null);
+      await page.waitForTimeout(1000);
       form = await contactPage.findContactForm();
     }
 
@@ -122,9 +127,10 @@ test.describe('Contact Form @forms', () => {
 
     if (!form) {
       await page.goto(siteConfig.url.replace(/\/$/, '') + '/contact', {
-        waitUntil: 'domcontentloaded',
-        timeout: 10_000,
+        waitUntil: 'networkidle',
+        timeout: 20_000,
       }).catch(() => null);
+      await page.waitForTimeout(1000);
       form = await contactPage.findContactForm();
     }
 
@@ -184,9 +190,10 @@ test.describe('Contact Form @forms', () => {
 
     if (!form) {
       await page.goto(siteConfig.url.replace(/\/$/, '') + '/contact', {
-        waitUntil: 'domcontentloaded',
-        timeout: 10_000,
+        waitUntil: 'networkidle',
+        timeout: 20_000,
       }).catch(() => null);
+      await page.waitForTimeout(1000);
       form = await contactPage.findContactForm();
     }
 

@@ -18,8 +18,13 @@ test.describe('Navigation @navigation', () => {
   // ── Visibility ──────────────────────────────────────────────────────────────
 
   test('navigation menu is visible @navigation', async ({ navigationPage }) => {
-    const isVisible = await navigationPage.isNavVisible();
-    expect(isVisible, 'A nav / [role="navigation"] element should be visible').toBeTruthy();
+    const isNavVisible = await navigationPage.isNavVisible();
+    // On mobile/tablet viewports the desktop nav is hidden — a hamburger toggle must be present
+    const hamburger = await navigationPage.getMobileMenuToggle();
+    expect(
+      isNavVisible || hamburger !== null,
+      'Site should have a visible nav element OR a mobile menu toggle button'
+    ).toBeTruthy();
   });
 
   // ── Link reachability ───────────────────────────────────────────────────────

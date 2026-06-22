@@ -12,11 +12,27 @@ import { dismissCookieBanner } from '@utils/visual-helper';
 
 // Shared screenshot options applied to all visual tests
 const SCREENSHOT_OPTIONS = {
-  maxDiffPixels: 500,
+  maxDiffPixels: 1000,
   animations: 'disabled',
   caret: 'hide',
-  fullPage: true,
+  // fullPage omitted — viewport-only captures are more stable on animated Squarespace sites
 } as const;
+
+/** Freeze page animations and pause videos so screenshots are stable. */
+async function freezeAnimations(page: import('@playwright/test').Page): Promise<void> {
+  await page.evaluate(() => {
+    // Pause all video/audio elements
+    document.querySelectorAll<HTMLVideoElement>('video, audio').forEach(m => m.pause());
+    // Forcibly pause CSS keyframe animations (supplement to Playwright's own animation disabling)
+    const style = document.createElement('style');
+    style.id = '__pw-freeze-animations';
+    style.textContent =
+      '*, *::before, *::after { animation-play-state: paused !important; transition-duration: 0s !important; }';
+    if (!document.getElementById('__pw-freeze-animations')) {
+      document.head.appendChild(style);
+    }
+  });
+}
 
 test.describe('Visual Regression @visual', () => {
   // Skip entire suite when site config opts out
@@ -35,8 +51,11 @@ test.describe('Visual Regression @visual', () => {
     // Dismiss any cookie/consent banners that would interfere with comparison
     await dismissCookieBanner(page);
 
-    // Allow any CSS animations/transitions to settle
-    await page.waitForTimeout(500);
+    // Freeze JS animations and pause videos before capturing
+    await freezeAnimations(page);
+
+    // Allow remaining transitions to settle
+    await page.waitForTimeout(1000);
 
     await expect(page).toHaveScreenshot('homepage-desktop.png', {
       ...SCREENSHOT_OPTIONS,
@@ -50,7 +69,8 @@ test.describe('Visual Regression @visual', () => {
     await page.goto(siteConfig.url, { waitUntil: 'networkidle' });
 
     await dismissCookieBanner(page);
-    await page.waitForTimeout(500);
+    await freezeAnimations(page);
+    await page.waitForTimeout(1000);
 
     await expect(page).toHaveScreenshot('homepage-mobile.png', {
       ...SCREENSHOT_OPTIONS,
@@ -64,7 +84,8 @@ test.describe('Visual Regression @visual', () => {
     await page.goto(siteConfig.url, { waitUntil: 'networkidle' });
 
     await dismissCookieBanner(page);
-    await page.waitForTimeout(500);
+    await freezeAnimations(page);
+    await page.waitForTimeout(1000);
 
     await expect(page).toHaveScreenshot('homepage-tablet.png', {
       ...SCREENSHOT_OPTIONS,

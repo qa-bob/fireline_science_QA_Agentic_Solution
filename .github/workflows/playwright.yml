@@ -1,0 +1,67 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run Playwright Tests (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium-desktop, mobile-chrome, tablet]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.project == 'chromium-desktop' && 'chromium' || matrix.project == 'mobile-chrome' && 'chromium' || 'chromium' }}
+
+      - name: Run TypeScript check
+        run: npm run typecheck
+
+      - name: Run Playwright tests
+        run: npx playwright test --project=${{ matrix.project }}
+        env:
+          CI: true
+          SITE_URL: ${{ secrets.SITE_URL || '' }}
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.project }}
+          path: test-results/
+          retention-days: 14
+
+      - name: Upload failure traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-${{ matrix.project }}
+          path: test-results/**/*.zip
+          retention-days: 7

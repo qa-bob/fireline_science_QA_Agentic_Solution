@@ -1,3 +1,12 @@
+---
+name: site-analyzer
+description: Use this agent to crawl a live website and analyze its structure — extracting nav items, forms, headings, CTAs, and meta tags — to produce or update site.config.json. Invoke when running /analyze-site, onboarding a new site, or verifying site.config.json after a redesign.
+tools:
+  - WebFetch
+  - Read
+  - Write
+---
+
 # Agent: site-analyzer
 
 ## Role

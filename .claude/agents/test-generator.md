@@ -1,3 +1,14 @@
+---
+name: test-generator
+description: Use this agent to generate site-specific Playwright TypeScript test files beyond the shared framework's generic tests. Invoke when /generate-full-suite is run, when a site has unique functionality needing custom coverage, or when writing regression tests for a discovered bug.
+tools:
+  - Read
+  - Write
+  - WebFetch
+  - Glob
+  - Grep
+---
+
 # Agent: test-generator
 
 ## Role

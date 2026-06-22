@@ -1,0 +1,29 @@
+# CODEOWNERS
+# These owners are automatically requested for review when the listed paths change.
+# Format: <path pattern> <@user or @org/team>
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for all files
+*                           @rosmall
+
+# Core framework — highest scrutiny
+playwright.config.ts        @rosmall
+src/fixtures/               @rosmall
+src/pages/base.page.ts      @rosmall
+tsconfig.json               @rosmall
+package.json                @rosmall
+
+# Site configuration
+site.config.json            @rosmall
+
+# CI/CD pipelines
+.github/workflows/          @rosmall
+
+# Claude Code configuration
+CLAUDE.md                   @rosmall
+.claude/                    @rosmall
+
+# Documentation
+README.md                   @rosmall
+AGENTS.md                   @rosmall
+SKILLS.md                   @rosmall

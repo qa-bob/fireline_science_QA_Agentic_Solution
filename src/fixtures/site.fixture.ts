@@ -10,10 +10,13 @@
  */
 
 import { test as base, expect } from '@playwright/test';
-import { loadSiteConfig, type SiteConfig } from '@types/site-config.types';
+import { loadSiteConfig, type SiteConfig } from '@site-types/site-config.types';
 import { HomePage } from '@pages/home.page';
 import { NavigationPage } from '@pages/navigation.page';
 import { ContactFormPage } from '@pages/contact.page';
+import { ProductsPage } from '@pages/products.page';
+import { AboutPage } from '@pages/about.page';
+import { ProductDetailPage } from '@pages/product-detail.page';
 
 // ── Fixture type definitions ─────────────────────────────────────────────────
 
@@ -26,46 +29,51 @@ export interface Fixtures {
   navigationPage: NavigationPage;
   /** ContactFormPage page object (does not auto-navigate) */
   contactPage: ContactFormPage;
+  /** ProductsPage page object (does not auto-navigate) */
+  productsPage: ProductsPage;
+  /** AboutPage page object (does not auto-navigate) */
+  aboutPage: AboutPage;
+  /** ProductDetailPage page object (does not auto-navigate) */
+  productDetailPage: ProductDetailPage;
 }
 
 // ── Extended test object ─────────────────────────────────────────────────────
 
 export const test = base.extend<Fixtures>({
-  /**
-   * siteConfig — loaded once per worker from site.config.json.
-   * Shared across all fixtures in the same test.
-   */
   siteConfig: async ({}, use) => {
     const config = loadSiteConfig();
     await use(config);
   },
 
-  /**
-   * homePage — constructs HomePage and navigates to the site root.
-   * Waits for domcontentloaded before handing control to the test.
-   */
   homePage: async ({ page, siteConfig }, use) => {
     const homePage = new HomePage(page, siteConfig);
     await homePage.navigate();
     await use(homePage);
   },
 
-  /**
-   * navigationPage — constructs NavigationPage without navigating.
-   * Tests that need to be on a specific page should call navigate() themselves.
-   */
   navigationPage: async ({ page, siteConfig }, use) => {
     const navigationPage = new NavigationPage(page, siteConfig);
     await use(navigationPage);
   },
 
-  /**
-   * contactPage — constructs ContactFormPage without navigating.
-   * Tests should navigate to the appropriate page first.
-   */
   contactPage: async ({ page, siteConfig }, use) => {
     const contactPage = new ContactFormPage(page, siteConfig);
     await use(contactPage);
+  },
+
+  productsPage: async ({ page, siteConfig }, use) => {
+    const productsPage = new ProductsPage(page, siteConfig);
+    await use(productsPage);
+  },
+
+  aboutPage: async ({ page, siteConfig }, use) => {
+    const aboutPage = new AboutPage(page, siteConfig);
+    await use(aboutPage);
+  },
+
+  productDetailPage: async ({ page, siteConfig }, use) => {
+    const productDetailPage = new ProductDetailPage(page, siteConfig);
+    await use(productDetailPage);
   },
 });
 
