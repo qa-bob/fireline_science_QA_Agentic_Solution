@@ -76,15 +76,12 @@ test.describe('Product Detail — Tuneni @functional', () => {
 
   test('product images are loaded and not broken @functional', async ({ productDetailPage }) => {
     const count = await productDetailPage.productImages.count();
-    if (count === 0) {
-      console.warn('[product-detail] No images found on Tuneni product page');
-      return;
-    }
+    test.skip(count === 0, 'No images found on Tuneni product page');
     for (let i = 0; i < Math.min(count, 4); i++) {
       const img = productDetailPage.productImages.nth(i);
       const isVisible = await img.isVisible().catch(() => false);
       if (isVisible) {
-        const w = await img.evaluate<number>((el) => (el as HTMLImageElement).naturalWidth);
+        const w = await img.evaluate((el) => (el as HTMLImageElement).naturalWidth);
         expect(w, `Image ${i} on Tuneni page is broken`).toBeGreaterThan(0);
       }
     }

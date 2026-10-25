@@ -133,10 +133,7 @@ test.describe('About Page @functional', () => {
     // Use all img tags (Squarespace doesn't always nest under main/article)
     const allImages = page.locator('img');
     const count = await allImages.count();
-    if (count === 0) {
-      console.warn('[about] No images found on /about page');
-      return;
-    }
+    test.skip(count === 0, 'No images found on /about page');
 
     // Scroll to trigger lazy loading before checking image dimensions
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -152,7 +149,7 @@ test.describe('About Page @functional', () => {
       // Skip SVG and tracking pixels (1×1 images)
       if (src.includes('.svg') || src.includes('pixel') || src.includes('1x1')) continue;
 
-      const w = await img.evaluate<number>((el) => (el as HTMLImageElement).naturalWidth);
+      const w = await img.evaluate((el) => (el as HTMLImageElement).naturalWidth);
       if (w === 0) brokenCount++;
     }
 

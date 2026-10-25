@@ -123,7 +123,7 @@ test.describe('Homepage Functional @functional', () => {
       const img = contentImages.nth(i);
       const isVisible = await img.isVisible().catch(() => false);
       if (isVisible) {
-        const naturalWidth = await img.evaluate<number>((el) => (el as HTMLImageElement).naturalWidth);
+        const naturalWidth = await img.evaluate((el) => (el as HTMLImageElement).naturalWidth);
         expect(naturalWidth, `Image ${i} appears to be broken (naturalWidth=0)`).toBeGreaterThan(0);
       }
     }
