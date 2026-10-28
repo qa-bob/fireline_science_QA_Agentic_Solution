@@ -1,11 +1,8 @@
 name: Daily Smoke Tests
 
+# Manual only: the QA workflow (qa.yml) now runs smoke tests on push/PR and the scheduled suites.
 on:
-  schedule:
-    # Run every day at 06:00 UTC
-    - cron: '0 6 * * *'
   workflow_dispatch:
-    # Allow manual trigger from the GitHub Actions UI
 
 jobs:
   smoke:
